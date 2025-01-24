@@ -1,17 +1,18 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View,Button } from 'react-native';
+import { StyleSheet, Text, View,Button,Alert } from 'react-native';
 import Mapview,{Marker,Polyline} from 'react-native-maps';
 import react, * as React from 'react';
 import * as Location from 'expo-location';
 import MapViewDirections from 'react-native-maps-directions';
 import {GoogleMap} from "@env";
+import { getDistance } from 'geolib';
+
+
+
 
 export default function App() {
   const[IsChoosingSource, setIsChoosingSource]= React.useState(false);
   const[IsChoosingDestination, setIsChoosingDestination]= React.useState(false);
-
-
-
 
 
   const [origin,setOrigin]=React.useState({
@@ -42,8 +43,34 @@ export default function App() {
     setOrigin(current);
   }
 
-  const showCoordinates=()=>{
-    console.log(origin,destination);
+  const showCoordinates = () => {
+    if (origin && destination) {
+      const distance =
+        getDistance(
+          {latitude: origin.latitude, longitude: origin.longitude},
+          {latitude: destination.latitude, longitude: destination.longitude},
+
+        ) / 1000;
+      Alert.alert(
+        
+        'Coordenadas y distancia',
+        `Origen: \nLatitude: ${origin.latitude}, Longitude: ${
+          origin.longitude
+
+        }\n \n Destino: \nLatitude: ${destination.latitude}, Longitude: ${
+          destination.longitude
+        }
+        \n\nDistancia entre el origen y destino: ${distance.toFixed(
+          2,
+        )} kilometros`,
+      );
+
+    } else {
+      Alert.alert(
+        'Error',
+        'Please select both source and destination coordinates.',
+      );
+    }
   };
 
 
@@ -101,7 +128,7 @@ export default function App() {
       <View style={styles.buttonContainer}>
         <View style={styles.buttonGroup}>
           <Button
-          title={IsChoosingSource ? 'please choose source': 'choose'}
+          title={IsChoosingSource ? 'please choose source': 'choose origen'}
           onPress={()=>setIsChoosingSource(true)}
           />
           <Button
@@ -144,3 +171,4 @@ const styles = StyleSheet.create({
     marginBottom:10,
   }
 });
+
