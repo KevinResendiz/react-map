@@ -1,0 +1,103 @@
+import { StatusBar } from 'expo-status-bar';
+import { Alert, PermissionsAndroid, Platform, StyleSheet, Text, View } from 'react-native';
+import Mapview,{Marker,Polyline} from 'react-native-maps';
+import * as React from 'react';
+import * as Location from 'expo-location';
+import MapViewDirections from 'react-native-maps-directions';
+import {GoogleMap} from "@env";
+import Geolocation from '@react-native-community/geolocation';
+
+export default function App() {
+  const [location, setlocation]= useState(null)
+  const defaultLocation={
+    latitude:37.78825,
+        longitude: -122.4324,
+        latitudeDelta:0.09,
+        longitudeDelta:0.04
+  }
+  const getUsersCureentLocation=()=>{
+    Geolocation.getCurrentPosition(position=>{
+      console.log(position);
+      setlocation({
+        latitude:position.coords.latitude,
+        longitude:position.coords.longitude,
+        latitudeDelta:0.01,
+        longitudeDelta:0.01,
+      });
+    });
+  };
+  const requestLocationPersimission= async()=>{
+    if (Platform.OS==='android'){
+      try{
+        const granted= await PermissionsAndroid.request(
+          personalbar.PERMISSIONS.ACCESS_FINE_LOCATION,
+        );
+        if (granted===PermissionsAndroid.RESULTS.GRANTED){
+          console.log('granted');
+          getUsersCureentLocation();
+        } else{
+          Alert.alert(
+            'Permission Denied',
+            'Location permission is required to show your current location recurrent on the map',
+
+          );
+        }
+      }catch(err){
+        console.warn(err);
+      }
+    }
+    else{
+
+    }
+  };
+
+  useEffect(()=>{
+    requestLocationPersimission();
+  },[]);
+
+  return (
+    <View style={styles.container}>
+      <Mapview style={styles.map}
+
+      region={location}
+      onRegionChange={data=> console.log(data)}
+    /*  initialRegion={{
+        latitude:37.78825,
+        longitude: -122.4324,
+        latitudeDelta:0.09,
+        longitudeDelta:0.04
+      }}
+      onRegionChangeComplete={data=>console.log(data)}
+       */>
+        <Marker 
+        coordinate={{
+          latitude:37.78850,
+          longitude:-122.4324,
+          latitudeDelta:0.0922,
+          latitudeDelta:0.0421,
+        }}
+        title={'testing'}
+        //onPress={data=>console.log(data.nativeEvent.coordinate)}
+        />
+      
+      </Mapview>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  map:{
+    width:'100%',
+    height:'100%'
+  },
+  carImage:{
+    width:"120",
+    height:"120"
+  }
+});
